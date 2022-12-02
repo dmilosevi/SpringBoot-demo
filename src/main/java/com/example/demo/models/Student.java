@@ -1,4 +1,4 @@
-package com.example.demo.student;
+package com.example.demo.models;
 
 import java.time.LocalDate;
 
