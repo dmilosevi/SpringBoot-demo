@@ -21,12 +21,14 @@ public class StudentConfig {
 	CommandLineRunner commandLineRunner(StudentRepository studentRepository, AppUserService userService) {
 		return args -> {
 			Student dominik = new Student(
+				1L,
 				"Dominik",
 				"domiloevi@gmail.com",
 				LocalDate.of(1998, Month.NOVEMBER, 30)
 			);
 			
 			Student ana = new Student(
+				2L,
 				"Ana",
 				"anahorvat1611@gmail.com",
 				LocalDate.of(2000, Month.NOVEMBER, 16)
@@ -37,23 +39,23 @@ public class StudentConfig {
 			);
 			
 			//JPA ce napraviti ID za nas
-			userService.saveRole(new Role(null, "ROLE_USER"));
-			userService.saveRole(new Role(null, "ROLE_MANAGER"));
-			userService.saveRole(new Role(null, "ROLE_ADMIN"));
-			userService.saveRole(new Role(null, "ROLE_SUPER_ADMIN"));
+			userService.saveRole(new Role(1L, "ROLE_USER"));
+			userService.saveRole(new Role(2L, "ROLE_MANAGER"));
+			userService.saveRole(new Role(3L, "ROLE_ADMIN"));
+			userService.saveRole(new Role(4L, "ROLE_SUPER_ADMIN"));
 			
-			userService.saveUser(new AppUser(null, "John Travolta", "john", "john123", new ArrayList<>()));
-			userService.saveUser(new AppUser(null, "Will Smith", "will", "will123", new ArrayList<>()));
-			userService.saveUser(new AppUser(null, "Jim Carry", "jim", "jim123", new ArrayList<>()));
-			userService.saveUser(new AppUser(null, "Arnold Schwarzenegger", "arnold", "arnold123", new ArrayList<>()));
+			userService.saveUser(new AppUser(5L, "John Travolta", "john", "john123", new ArrayList<>()));
+			userService.saveUser(new AppUser(6L, "Will Smith", "will", "will123", new ArrayList<>()));
+			userService.saveUser(new AppUser(7L, "Jim Carry", "jim", "jim123", new ArrayList<>()));
+			userService.saveUser(new AppUser(8L, "Arnold Schwarzenegger", "arnold", "arnold123", new ArrayList<>()));
 			
-			userService.addRoleToUser("john",  "ROLE_USER");
-			userService.addRoleToUser("john",  "ROLE_MANAGER");
-			userService.addRoleToUser("will",  "ROLE_MANAGER");
-			userService.addRoleToUser("jim",  "ROLE_ADMIN");
-			userService.addRoleToUser("arnold",  "ROLE_SUPER_ADMIN");
-			userService.addRoleToUser("arnold",  "ROLE_ADMIN");
-			userService.addRoleToUser("arnold",  "ROLE_USER");
+			userService.addRoleToUser("john", "ROLE_USER");
+			userService.addRoleToUser("john", "ROLE_MANAGER");
+			userService.addRoleToUser("will", "ROLE_MANAGER");
+			userService.addRoleToUser("jim", "ROLE_ADMIN");
+			userService.addRoleToUser("arnold", "ROLE_SUPER_ADMIN");
+			userService.addRoleToUser("arnold", "ROLE_ADMIN");
+			userService.addRoleToUser("arnold", "ROLE_USER");
 		};
 	}
 }

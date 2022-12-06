@@ -9,12 +9,40 @@
 
 //@Slf4j 
 //za loggove - jer cemo zapisivati sve sto se bude dogadalo
+
+//public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
+//Ovo je metoda koju moramo Override-ati nakon sto smo implementirali UserDetailsService
+//to je metoda koju Spring koristi za load-anje usera iz baze podataka
+//username ce imati onu vrijednost koju ce upisati korisnika
+//return vraca Spring Security Usera i radi se usporedba passworda i ostalog (moramo vratiti usera koji je dosao iz UserDetailsService)
+
+//AppUser user = userRepo.findByUsername(username);
+//prvo loadamo usera na temelju imena kojeg je korisnik upisao
+//"user" sadrzi usera kojeg smo nasli u bazi podataka
+
+//.getRoles() 
+//kada dohvati sve role, loopa po svakoj roli od tog korisnika i za svaku kreira SimpleGrandtedAuthority tako da saljemo ime te role i zatim ju dodajemo u listu
+
+//kada misem predes preko "User" vidis sto je potrebno kao treci parametar i vidimo da authorities moze biti kolekcija bilo kojeg tupa koja nasljeđuje SimpleGrandtedAuthority
+
+//TUTORIAL
+//org.springframework.security.core.userdetails.User(username, username, null);
+//pisao je ovako dugacko zato jer ono sto je nama AppUser njemu se zove "User" tj. isto kao i ovo pa je zato upisao puno ime da se razlikuje
+
 package com.example.demo.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.models.AppUser;
@@ -29,11 +57,29 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional //zelimo da sve u klasi bude Transactional
 @Slf4j
-public class AppUserServiceImpl implements AppUserService {
-	
-
+public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 	private final AppUserRepo userRepo;
 	private final RoleRepo roleRepo;
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		AppUser user = userRepo.findByUsername(username);
+		if(user == null) {
+			log.error("User not found in the database");
+			throw new UsernameNotFoundException("User not found in the database");
+		} else { //ako username nije null znaci da bi ga trebali moci pronaci u bazi podataka
+			log.info("User found in the database: {}", username);
+			
+		}
+		
+		Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+		
+		user.getRoles().forEach(role -> {
+			authorities.add(new SimpleGrantedAuthority(role.getName()));
+		});
+	
+		return new User(user.getUsername(), user.getPassword(), authorities);
+	}
 	
 	@Override
 	public AppUser saveUser(AppUser user) {
