@@ -3,7 +3,7 @@
 
 //@RequiredArgsConstructor
 //Lombok ce kreirati konstruktor i pobrinuti se da su svi argumenti (userService) proslijedeni u kontrusktor
-//ovo je zapravo DEPENDENCY INJECTION
+//koristi se za DEPENDENCY INJECTION
 
 //ResponseEntity
 //predstavlja HTTP response: status code, headers i body
