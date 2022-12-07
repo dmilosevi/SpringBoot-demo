@@ -29,6 +29,8 @@
 //org.springframework.security.core.userdetails.User(username, username, null);
 //pisao je ovako dugacko zato jer ono sto je nama AppUser njemu se zove "User" tj. isto kao i ovo pa je zato upisao puno ime da se razlikuje
 
+//iz razloga sto u "AppUserServiceImpl" save-amo usere, moramo encodirati password i onda spremiti usere u bazu
+
 package com.example.demo.service;
 
 import java.util.ArrayList;
@@ -38,11 +40,13 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.models.AppUser;
@@ -54,12 +58,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@RequiredArgsConstructor
 @Transactional //zelimo da sve u klasi bude Transactional
 @Slf4j
 public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 	private final AppUserRepo userRepo;
 	private final RoleRepo roleRepo;
+	private final PasswordEncoder passwordEncoder;
+	
+	//maknuli smo @AllArgsConstructor kako bi mogli staviti @Lazy
+	public AppUserServiceImpl(AppUserRepo userRepo, RoleRepo roleRepo, @Lazy PasswordEncoder passwordEncoder) {
+		this.userRepo = userRepo;
+		this.roleRepo = roleRepo;
+		this.passwordEncoder = passwordEncoder;
+	}
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -84,6 +95,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 	@Override
 	public AppUser saveUser(AppUser user) {
 		log.info("Saving new user {} to the database", user.getUsername());
+		user.setPassword(passwordEncoder.encode(user.getPassword())); //prije nego save-amo korisnika zelimo encode-irati password
 		return userRepo.save(user);
 	}
 
