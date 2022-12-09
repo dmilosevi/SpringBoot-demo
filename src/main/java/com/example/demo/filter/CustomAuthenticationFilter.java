@@ -52,7 +52,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter { // /login dolazi iz ove extendane klase (/login nije u UserControlleru)
 	private final AuthenticationManager authenticationManager;
 	
 	public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {

@@ -39,7 +39,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -54,7 +53,6 @@ import com.example.demo.models.Role;
 import com.example.demo.repo.AppUserRepo;
 import com.example.demo.repo.RoleRepo;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

@@ -40,8 +40,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.demo.filter.CustomAuthenticationFilter;
+import com.example.demo.filter.CustomAuthorizationFilter;
 
 
 @Configuration
@@ -82,8 +84,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		//sljedece dvije linije koda su nacin na koji mijenjamo URL iz /login u /api/login obzirom da nam sve pocinje s api
+		CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+		customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+		
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(STATELESS); //desni klik -> Source -> Add Import
+		http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**").permitAll(); //ovo znaci da ovaj path nece imati secure (bitno je da se nalazi prvi)
 		//kada se napravi GET request i URL izgleda /api/user/**, onda neka ima rolu "ROLE_USER"
 		//** bilo sto sta dolazi nakon
 		//ZAKLJUCAK: moguce je biti jako detaljan kod postavljanja security-a
@@ -92,7 +99,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
 		http.authorizeRequests().anyRequest().authenticated(); //zelimo da svi budu autenticirani
 		//http.authorizeRequests().anyRequest().permitAll(); //u ovom trenutku ovo dopusta svima da pristupe app a to ne zelimo jer onda security nema smisla
-		http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+		http.addFilter(customAuthenticationFilter);
+		//stavljamo .addFilterBefore() jer taj filter dolazi prije ostalih filtera jer moramo presijecati svaki
+		//request prije bilo kog drugog filtera
+		//UsernamePasswordAuthenticationFilter.class - zelimo reci
+		http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	
